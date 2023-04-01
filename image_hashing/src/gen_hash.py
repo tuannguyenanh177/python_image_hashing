@@ -28,6 +28,12 @@ def genHash():
     json.dump(params, f, ensure_ascii=False, indent=2)
     f.close()
 
+def genHash(image):
+  img = Image.open(image)
+  imgHash = str(imagehash.dhash(img))
+  hashInt = twos_complement(imgHash, 64) #convert from hexadecimal to 64 bit signed integer
+  return hashInt
+
 
 if __name__ == "__main__":
    genHash()
