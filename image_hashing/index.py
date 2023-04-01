@@ -1,26 +1,23 @@
+import psycopg2
+from psycopg2.extras import execute_values
 from flask import Flask, jsonify, request
+from image_hashing.src.gen_hash import twos_complement
 
 app = Flask(__name__)
-
-incomes = [
-    { 'description': 'salary', 'amount': 5000 }
-]
-
-
-@app.route('/incomes')
-def get_incomes():
-    return jsonify(incomes)
-
-
-@app.route('/incomes', methods=['POST'])
-def add_income():
-    incomes.append(request.get_json())
-    return '', 204
+conn = psycopg2.connect(database = "postgres", user = "postgres", password = "myhcmuspassword", host = "127.0.0.1")
+cursor = conn.cursor()
+print("Connection Successful to PostgreSQL")
 
 @app.route('/save', methods=['POST'])
 def save():
-    json = request.get_json()
-    response = {
-        "new": json["url"]
-    }
+    jsonList = list(request.get_json())
+    response = jsonList[0]["url"]
+
+    values = [(dic["hash"], dic["url"]) for dic in jsonList]
+
+    execute_values(cursor,
+    "INSERT INTO hashes(hash, url) VALUES %s",
+    values)
+    conn.commit()
+
     return jsonify(response)
