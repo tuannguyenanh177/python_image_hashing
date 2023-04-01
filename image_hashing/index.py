@@ -34,6 +34,6 @@ def search():
     urls = [x[0] for x in hashRows]
     print(urls)
 
-    return jsonify({"hash": hashInt})
+    return jsonify(hashRows)
   else:
     return "Where is the image?"
