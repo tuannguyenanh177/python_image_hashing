@@ -29,9 +29,9 @@ def search():
     hashInt = genHash(img)
 
     maxDifference = 3
-    cursor.execute(f"SELECT (hash, url) FROM hashes WHERE hash <@ ({hashInt}, {maxDifference})")
+    cursor.execute(f"SELECT hash, url FROM hashes WHERE hash <@ ({hashInt}, {maxDifference})")
     hashRows = cursor.fetchall()
-    result = [(x[0], x[1]) for x in hashRows]
+    result = [{"hash": x[0], "url": x[1]} for x in hashRows]
     print(result)
 
     return jsonify(result)
