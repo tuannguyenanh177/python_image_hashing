@@ -2,6 +2,7 @@ import psycopg2
 from psycopg2.extras import execute_values
 from flask import Flask, jsonify, request
 from image_hashing.src.gen_hash import twos_complement, genHash
+from timeit import default_timer as timer
 
 app = Flask(__name__)
 conn = psycopg2.connect(database = "postgres", user = "postgres", password = "myhcmuspassword", host = "127.0.0.1")
@@ -25,15 +26,24 @@ print("Connection Successful to PostgreSQL")
 @app.route('/search', methods=['POST'])
 def search():
   if request.files['image']:
+    start = timer()
     img = request.files['image']
     hashInt = genHash(img)
+    gen_hash_time = round(timer() - start, 3)
 
+    start = timer()
     maxDifference = 3
     cursor.execute(f"SELECT hash, url FROM hashes WHERE hash <@ ({hashInt}, {maxDifference})")
     hashRows = cursor.fetchall()
     result = [{"hash": x[0], "url": x[1]} for x in hashRows]
-    print(result)
+    query_time = round(timer() - start, 3)
 
-    return jsonify(result)
+    response = {
+      "gen_hash_time": gen_hash_time,
+      "query_time": query_time,
+      "data": result
+    }
+
+    return jsonify(response)
   else:
     return "Where is the image?"
