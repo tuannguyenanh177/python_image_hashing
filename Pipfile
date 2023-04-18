@@ -8,6 +8,12 @@ flask = "*"
 imagehash = "*"
 #psycopg2 = "*"
 psycopg2-binary = "*"
+matplotlib = "*"
+numpy = "*"
+pandas = "*"
 
 [requires]
 python_version = "3.9"
+
+[dev-packages]
+ipykernel = "*"
